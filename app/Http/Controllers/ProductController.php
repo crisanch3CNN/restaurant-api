@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class ProductController extends Controller
 {
@@ -14,17 +16,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $products = Product::all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return response()->json($products);
     }
 
     /**
@@ -35,7 +29,29 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            "name" => "required",
+            "price" => "required",
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Guardar la información del producto
+            $product = new Product();
+            $product->name = $request->input("name");
+            $product->short_description = $request->input("short_description");
+            $product->description = $request->input("description");
+            $product->price = $request->input("price");
+            $product->save();
+
+            DB::commit();
+        } catch (Throwable $e) {
+            DB::rollback();
+            return response($e->getMessage(), 500);
+        }
+
+        return response()->json($product);
     }
 
     /**
@@ -46,18 +62,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Product $product)
-    {
-        //
+        return response()->json($product);
     }
 
     /**
@@ -69,7 +74,28 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $request->validate([
+            "name" => "required",
+            "price" => "required",
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Guardar la información del producto
+            $product->name = $request->input("name");
+            $product->short_description = $request->input("short_description");
+            $product->description = $request->input("description");
+            $product->price = $request->input("price");
+            $product->save();
+
+            DB::commit();
+        } catch (Throwable $e) {
+            DB::rollback();
+            return response($e->getMessage(), 500);
+        }
+
+        return response()->json($product);
     }
 
     /**
@@ -80,6 +106,8 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $product->delete();
+
+        return response("success", 200);
     }
 }
