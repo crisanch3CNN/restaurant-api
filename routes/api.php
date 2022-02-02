@@ -20,6 +20,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::middleware(["auth:sanctum"])->group(function () {
+    # GET / POST / PATCH / DELETE de cada objeto con su respectivo controlador API
+    Route::apiResource("products", ProductController::class);
+    Route::apiResource("categories", CategoryController::class);
+    Route::apiResource("orders", OrderController::class);
+});
+
 //POST /api/auth/login
 Route::post('/auth/login', [AuthController::class, 'login']);
 // Route::post('/auth/register')
